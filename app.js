@@ -11,8 +11,23 @@ function errorHandler(res, error) {
   });
 }
 
-app.get("/user/:id", (req, res) => {
+app.get("/user/:id", async (req, res) => {
+  let { id } = req.params;
+  if (!id) throw new Error("id not found");
+  if (typeof id === "string") {
+    id = Number(id);
+  }
   try {
+    const foundUser = await User.find({
+      where: {
+        id,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      foundUser,
+    });
   } catch (error) {
     errorHandler(res, error);
   }
